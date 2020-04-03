@@ -51,7 +51,7 @@ C:\PythonApplication1\PythonApplication1>python PythonApplication1.py https://ww
 
 4、遇到下载失败，错误码是403时，可以尝试多运行几次，如果依旧403，请提交issue
 
-5、写C写习惯了，python野路子出身，变量命名、代码逻辑什么的基本上都是C风格，如果有人愿意按专业的python程序员把它“格式化”一下看起来更优雅的话，那就非常感谢了
+5、写C写习惯了，python野路子出身，变量命名、代码逻辑什么的基本上都是C风格，如果有人愿意按专业的python程序员眼光把它“格式化”一下看起来更优雅的话，那就非常感谢了
 
 
 
