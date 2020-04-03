@@ -1,7 +1,7 @@
 # renrenDownloader
 人人美剧视频下载、
 
-支持的网站是https://www.rrmeiju.cc，其他网站不支持
+支持的网站是[https://www.rrmeiju.cc](https://www.rrmeiju.cc)，其他网站不支持
 
 ### 使用方法
 
@@ -57,7 +57,7 @@ C:\PythonApplication1\PythonApplication1>python PythonApplication1.py https://ww
 
 ### 思路
 
-1、从播放页面，例如https://www.rrmeiju.cc/Play/2735-1-1.html，从html源码中拿到2735.js的地址（js的名称就是html的名称前几个字符），upload/playdata/20190603/2735/2735.js，组装链接为https://www.rrmeiju.cc/upload/playdata/20190603/2735/2735.js
+1、从播放页面，例如[https://www.rrmeiju.cc/Play/2735-1-1.html](https://www.rrmeiju.cc/Play/2735-1-1.html)，从html源码中拿到2735.js的地址（js的名称就是html的名称前几个字符），upload/playdata/20190603/2735/2735.js，组装链接为[https://www.rrmeiju.cc/upload/playdata/20190603/2735/2735.js](https://www.rrmeiju.cc/upload/playdata/20190603/2735/2735.js)
 
 2、从2735.js中获取到mac_url段
 
@@ -110,7 +110,7 @@ def unescape(string):
 1000k/hls/index.m3u8
 ```
 
-内容里是另一个m3u8的地址，将这个地址和上一个m3u8的地址拼接起来，获得真正的m3u8文件地址：https://iqiyi.com-t-iqiyi.com/20190603/3413_ac65206b/1000k/hls/index.m3u8
+内容里是另一个m3u8的地址，将这个地址和上一个m3u8的地址拼接起来，获得真正的m3u8文件地址：[https://iqiyi.com-t-iqiyi.com/20190603/3413_ac65206b/1000k/hls/index.m3u8](https://iqiyi.com-t-iqiyi.com/20190603/3413_ac65206b/1000k/hls/index.m3u8)
 
 4、从这个地址获得的m3u8存放着视频分割的ts地址，内容如下
 
@@ -132,7 +132,7 @@ def unescape(string):
 ...
 ```
 
-需要将ts也拼接一下，拼接成真正的地址：https://iqiyi.com-t-iqiyi.com/20190603/3413_ac65206b/1000k/hls/5df472edfc9000000.ts
+需要将ts也拼接一下，拼接成真正的地址：[https://iqiyi.com-t-iqiyi.com/20190603/3413_ac65206b/1000k/hls/5df472edfc9000000.ts](https://iqiyi.com-t-iqiyi.com/20190603/3413_ac65206b/1000k/hls/5df472edfc9000000.ts)
 
 5、多线程requests.get()下载，然后拼接文件即可
 
@@ -142,13 +142,13 @@ def unescape(string):
 
 
 
-发现下载电影会失败，例如https://www.rrmeiju.cc/Play/2163-1-1.html，阿丽塔战斗天使
+发现下载电影会失败，例如[https://www.rrmeiju.cc/Play/2163-1-1.html](https://www.rrmeiju.cc/Play/2163-1-1.html)，阿丽塔战斗天使
 
 在请求第一个m3u8文件是直接请求，但是网站上请求这个加了参数?sign=xxxxxxxxx
 
 而且下电视剧没有参数，网站上还分开处理了，脚本也要分开处理了
 
-发现将m3u8地址传给了一个网址:https://okokmis.yueyuw.com/m3u8.php?vid=http://cdn.rbhanju.com/20191005/0cZpq89t/index.m3u8，然后php内组装了参数
+发现将m3u8地址传给了一个网址:[https://okokmis.yueyuw.com/m3u8.php?vid=http://cdn.rbhanju.com/20191005/0cZpq89t/index.m3u8](https://okokmis.yueyuw.com/m3u8.php?vid=http://cdn.rbhanju.com/20191005/0cZpq89t/index.m3u8)，然后php内组装了参数
 
 ```php
 var vid=GetQueryString("vid")+'?sign=aabfb8745a1a2a66987135ffe3792dc57dc7879ddc0a12c63655bf4c38424120c703de287a85185af4d32ac44639c9ba';
@@ -182,6 +182,6 @@ mac_show["kb"] = "kb云视频";
 
 在html文件源码中有js文件，例如这个网址的就是2163.js，这个js文件里有个变量：mac_from = 8km3u8，这样就和这些列表对应起来了
 
-这些云的解析网址都在名称.js里，例如8km3u8.js，ckm3u8.js，js所在网址是https://www.rrmeiju.cc/player/目录下
+这些云的解析网址都在名称.js里，例如8km3u8.js，ckm3u8.js，js所在网址是[https://www.rrmeiju.cc/player/](https://www.rrmeiju.cc/player/)目录下
 
 **先支持：8km3u8、ckm3u8，其他的发现了再支持，pb云播就不用看了，就是屏蔽的意思**
