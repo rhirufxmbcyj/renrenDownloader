@@ -31,7 +31,13 @@ python renrenDownload.py https://www.rrmeiju.cc/Play/2735-1-1.html
 
 脚本内部会解析全部集数的链接，由用户选择下载哪一集或全部
 
-![image-20200404032700168](C:\Users\test\AppData\Roaming\Typora\typora-user-images\image-20200404032700168.png)
+```
+C:\PythonApplication1\PythonApplication1>python PythonApplication1.py https://www.rrmeiju.cc/Play/2735-1-1.html
+名称： 行尸之惧第五季
+共 16 集
+请选择要下载的集数：（0：下载全部   1：第一集 2：第二集...   1,4,5,10：第一、四、五、十集）
+请输入：
+```
 
 
 
