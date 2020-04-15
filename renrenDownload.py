@@ -2,6 +2,7 @@
 import re
 import os
 import sys
+import time
 import html
 import m3u8
 import requests
@@ -13,10 +14,20 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 lock = threading.Lock()
 ts_index = 0
+finish_list=[]
 thread_num = 8
 ts_count = 0
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36'}
 mac_from = ''
+
+def request_get_func(url = ''):
+    res = requests.get(url)
+    if(res.status_code == 403):
+        for i in range(0,3):
+            res = requests.get(url)
+            if(res.status_code == 200):
+                break
+    return res
 
 def download_ts(ts_url='', index=0):
     global ts_count
@@ -36,6 +47,7 @@ def download_ts(ts_url='', index=0):
 def thread_function(m3u8_segments, m3u8_url):
     global lock
     global ts_index
+    global finish_list
     url = ''
     i = 0
     while True:
@@ -49,18 +61,25 @@ def thread_function(m3u8_segments, m3u8_url):
         ts_index += 1
         lock.release()
         download_ts(url, i)
+        # 下载好的index加入完成列表
+        finish_list.append(i)
 
 def merge_files(ts_count=0, name=''):
+    global finish_list
     f_out = open(name + '.ts', 'wb')
-    for index in range(0,ts_count):
-        f_in = open(str(index) + '.ts','rb')
-        if os.path.exists(str(index) + '.ts'):
+    index = 0
+    while(True):
+        if(index == ts_count):
+            break
+        if(index in finish_list):
+            f_in = open(str(index) + '.ts','rb')
             f_out.write(f_in.read())
+            f_in.close()
+            os.remove(str(index) + '.ts')
         else:
-            print(u'文件' + str(index) + u'.ts' + u'不存在')
-            exit(-1)
-        f_in.close()
-        os.remove(str(index) + '.ts')
+            time.sleep(1)
+            index = index - 1
+        index = index + 1
     f_out.close()
     print(u'合并文件成功')
 
@@ -75,7 +94,7 @@ def get_name_and_url(html_link=''):
     js_name = os.path.basename(html_link).split('-')[0] + '.js'
     # js_url = urllib.parse.urljoin(html_link,js_name)
     js_url = ''
-    res = requests.get(html_link)
+    res = request_get_func(html_link)
     if(res.status_code != 200):
         print(u'获取',html_link,u'错误码：', str(res.status_code))
         exit(-1)
@@ -89,7 +108,7 @@ def get_name_and_url(html_link=''):
         print(u'html页面找不到',js_name,u'请将视频播放链接提交issue')
         exit(-1)
     js_url = urllib.parse.urljoin(html_link,js_url)
-    res = requests.get(js_url)
+    res = request_get_func(js_url)
     if(res.status_code != 200):
         print(u'获取',js_url,'错误码：', str(res.status_code))
         exit(-1)
@@ -113,7 +132,7 @@ def parse_m3u8_url(m3u8_url=''):
         return m3u8_url
     if(mac_from == '8km3u8'):
         # RR云视频 请求m3u8时需要带sign参数
-        res = requests.get('https://okokmis.yueyuw.com/m3u8.php?vid=' + m3u8_url)
+        res = request_get_func('https://okokmis.yueyuw.com/m3u8.php?vid=' + m3u8_url)
         if(res.status_code != 200):
             print(u"获取m3u8.php失败")
             exit(-1)
@@ -126,32 +145,37 @@ def download_one(m3u8_list=[], num=0):
     global ts_count
     global thread_num
     global ts_index
+    global finish_list
     ts_index = 0
     num = num * 2
     name = m3u8_list[num]
     m3u8_url = parse_m3u8_url(m3u8_list[num + 1])
     print(u"开始下载",name)
-    res = requests.get(m3u8_url)
+    res = request_get_func(m3u8_url)
     if(res.status_code != 200):
         print(name,u"下载失败",u"错误码：",res.status_code)
         return
     m3u8_data = m3u8.parse(res.content.decode('utf-8'))
     m3u8_url = urllib.parse.urljoin(m3u8_url,m3u8_data['playlists'][0]['uri'])
-    res = requests.get(m3u8_url)
+    res = request_get_func(m3u8_url)
     if(res.status_code != 200):
         print(name,u"下载失败",u"错误码：",res.status_code)
         return
     m3u8_data = m3u8.parse(res.content.decode('utf-8'))
     ts_count = len(m3u8_data['segments'])
     thread_list = []
+    finish_list = []
     for i in range(0, thread_num):
         t = threading.Thread(target=thread_function, name='LoopThread %s' % i, args=(m3u8_data['segments'],m3u8_url))
         thread_list.append(t)
         t.start()
+    # 开始合并文件线程 边下载边合并
+    t = threading.Thread(target=merge_files, name='merge_files', args=(ts_count,name))
+    thread_list.append(t)
+    t.start()
     for t in thread_list:
         t.join()
     print(u"下载",name,u"完成")
-    merge_files(ts_count,name)
 
 
 def download_all(m3u8_list=[]):
